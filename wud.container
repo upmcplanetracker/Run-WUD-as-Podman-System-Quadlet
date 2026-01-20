@@ -1,0 +1,46 @@
+[Unit]
+Description=WhatsUpDocker (WUD) Service
+After=network-online.target
+
+[Container]
+Image=docker.io/getwud/wud:latest
+ContainerName=wud
+AutoUpdate=registry
+PublishPort=3050:3000
+
+# Keep host groups for socket access
+GroupAdd=keep-groups
+
+# --- Podman Socket Mapping ---
+# Using the native Podman socket instead of Docker
+Volume=/run/podman/podman.sock:/var/run/docker.sock
+
+# --- Storage ---
+Volume=/home/user/wud/store:/store:Z
+
+# --- Environment Configuration ---
+Environment=TZ=America/New_York
+Environment=WUD_WATCHER_DOCKER_WATCHALL=true
+Environment="WUD_WATCHER_DOCKER_CRON=0 3 * * *"
+
+# Registry Credentials (Replace with your own)
+Environment=WUD_REGISTRY_HUB_dockerhub_LOGIN=username
+Environment=WUD_REGISTRY_HUB_dockerhub_PASSWORD=your_password
+
+# Notification Configuration (SMTP Example)
+Environment=WUD_TRIGGER_SMTP_GMAIL_HOST=smtp.gmail.com
+Environment=WUD_TRIGGER_SMTP_GMAIL_PORT=587
+Environment=WUD_TRIGGER_SMTP_GMAIL_USER=your_email@gmail.com
+Environment=WUD_TRIGGER_SMTP_GMAIL_PASS=your_app_password
+Environment=WUD_TRIGGER_SMTP_GMAIL_FROM=your_email@gmail.com
+Environment=WUD_TRIGGER_SMTP_GMAIL_TO=your_email@gmail.com
+Environment="WUD_TRIGGER_SMTP_GMAIL_SIMPLETITLE=Server: Update found for $${container.name}"
+
+Environment=WUD_WATCHER_DOCKER_WATCHATSTART=false
+Environment=WUD_WATCHER_DOCKER_WATCHEVENTS=false
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
