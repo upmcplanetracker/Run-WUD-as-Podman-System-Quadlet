@@ -12,7 +12,6 @@ PublishPort=3050:3000
 GroupAdd=keep-groups
 
 # --- Podman Socket Mapping ---
-# Using the native Podman socket instead of Docker
 Volume=/run/podman/podman.sock:/var/run/docker.sock
 
 # --- Storage ---
